@@ -1,7 +1,7 @@
 
 import torch
-import optoth.pad2d
-
+#import optoth.pad2d
+from . import  pad2d_cpu as optoth_pad2d
 import numpy as np
 
 __all__ = ['Conv2d', 'ConvScale2d', 'ConvScaleTranspose2d']
@@ -77,7 +77,7 @@ class Conv2d(torch.nn.Module):
         # then pad
         pad = weight.shape[-1]//2
         if self.pad and pad > 0:
-            x = optoth.pad2d.pad2d(x, (pad,pad,pad,pad), mode='symmetric')
+            x = optoth_pad2d.pad2d(x, (pad,pad,pad,pad), mode='symmetric')
         # compute the convolution
         return torch.nn.functional.conv2d(x, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
@@ -98,7 +98,7 @@ class Conv2d(torch.nn.Module):
         x = torch.nn.functional.conv_transpose2d(x, weight, self.bias, self.stride, self.padding, output_padding, self.groups, self.dilation)
         pad = weight.shape[-1]//2
         if self.pad and pad > 0:
-            x = optoth.pad2d.pad2d_transpose(x, (pad,pad,pad,pad), mode='symmetric')
+            x = optoth_pad2d.pad2d_transpose(x, (pad,pad,pad,pad), mode='symmetric')
         return x
 
     def extra_repr(self):

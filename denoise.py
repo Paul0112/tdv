@@ -24,13 +24,14 @@ if color == 'gray':
 z = y + sigma/255. * np.random.randn(*y.shape).astype(np.float32)
 
 # load the model state dict
-checkpoint = torch.load(os.path.join('checkpoints', f'tdv3-3-25-f32-{color}.pth'))
+#checkpoint = torch.load(os.path.join('checkpoints', f'tdv3-3-25-f32-{color}.pth'))
+checkpoint = torch.load(os.path.join('checkpoints', f'tdv3-3-25-f32-{color}.pth'), map_location=torch.device('cpu'))
 sigma_ref = 25
 
 # get the variational network with the TDV regularizer
 vn = model.VNet(checkpoint['config'], efficient=False)
 vn.load_state_dict(checkpoint['model'])
-vn.cuda()
+#vn.cuda() test on CPU
 
 # define the evaluation metric
 def psnr(x, y): 
@@ -46,8 +47,10 @@ def apply_vn(x_0, z):
     return x
 
 # push the images to torch
-y_th = torch.from_numpy(np.transpose(y, (2,0,1))[None]).cuda()
-z_th = torch.from_numpy(np.transpose(z, (2,0,1))[None]).cuda()
+#y_th = torch.from_numpy(np.transpose(y, (2,0,1))[None]).cuda()
+#z_th = torch.from_numpy(np.transpose(z, (2,0,1))[None]).cuda()
+y_th = torch.from_numpy(np.transpose(y, (2,0,1))[None])
+z_th = torch.from_numpy(np.transpose(z, (2,0,1))[None])
 
 with torch.no_grad():
     x_th = apply_vn(z_th, z_th)
